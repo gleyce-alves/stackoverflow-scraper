@@ -50,17 +50,17 @@ def extract_answer_from_question_page(url: str) -> str:
     Returns:
         str: The answer text, or a message if no answer is found.
     """
+
     response = requests.get(url)
 
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        answer_elements = soup.find_all(class_="post-text")
+        answer_element = soup.find(class_="answer")
         
-        if answer_elements:
-            
-            answer = answer_elements[0].get_text()
-            return answer
+        if answer_element:
+            answer_text = answer_element.find(class_="s-prose").get_text()
+            return answer_text
 
         return "No answer found for the question."
     else:
@@ -70,7 +70,7 @@ def extract_answer_from_question_page(url: str) -> str:
 
 if __name__ == "__main__":
     api_key = 'X7)HB7SzXcSiziIw1QuOuA(('
-    search_query = 'test'
+    search_query = 'python'
     search_results = search_stack_overflow_error(api_key, search_query)
     
     if search_results:
@@ -79,14 +79,12 @@ if __name__ == "__main__":
             print(f"{index}. Title: {result['Title']}")
             print(f"   Link: {result['Link']}")
         
-        # Get the first result
-        first_result = search_results[0]
+        first_result = search_results[0]  
         first_result_title = first_result['Title']
         first_result_link = first_result['Link']
 
         print(f"\nTitle of the first result: {first_result_title}")
         print(f"Link of the first result: {first_result_link}")
         
-        # Get the answer from the first question
         answer = extract_answer_from_question_page(first_result_link)
-        print(f"\nAnswer from the first result: {answer}")
+        print(f"Answer from the first result: {answer}")
