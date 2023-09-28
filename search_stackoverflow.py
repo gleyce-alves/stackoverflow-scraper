@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import re
 
 def search_stack_overflow_error(api_key: str, search_query: str) -> list:
     """
@@ -13,10 +14,14 @@ def search_stack_overflow_error(api_key: str, search_query: str) -> list:
         list: A list of dictionaries containing search results with titles and links.
     """
 
+    # Split the search query into individual words and build a search string
+    search_words = re.findall(r'\w+', search_query)
+    search_string = ' '.join(search_words)
+
     params = {
         'site': 'stackoverflow',
         'key': api_key,
-        'intitle': search_query,  
+        'intitle': search_string,
     }
 
     api_url = 'https://api.stackexchange.com/2.3/search'
@@ -55,9 +60,9 @@ def extract_answer_from_question_page(url: str) -> str:
 
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
-        
+
         answer_element = soup.find(class_="answer")
-        
+
         if answer_element:
             answer_text = answer_element.find(class_="s-prose").get_text()
             return answer_text
@@ -66,25 +71,3 @@ def extract_answer_from_question_page(url: str) -> str:
     else:
         print("Error in the request:", response.status_code)
         return "Error in the request."
-
-
-if __name__ == "__main__":
-    api_key = 'X7)HB7SzXcSiziIw1QuOuA(('
-    search_query = 'python'
-    search_results = search_stack_overflow_error(api_key, search_query)
-    
-    if search_results:
-        print("Search results:")
-        for index, result in enumerate(search_results, start=1):
-            print(f"{index}. Title: {result['Title']}")
-            print(f"   Link: {result['Link']}")
-        
-        first_result = search_results[0]  
-        first_result_title = first_result['Title']
-        first_result_link = first_result['Link']
-
-        print(f"\nTitle of the first result: {first_result_title}")
-        print(f"Link of the first result: {first_result_link}")
-        
-        answer = extract_answer_from_question_page(first_result_link)
-        print(f"Answer from the first result: {answer}")
