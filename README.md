@@ -62,7 +62,7 @@ Follow these steps to run the scraping mechanism:
 4. Install the project dependencies using `pip`:
 
 	```bash
-	pip install -r requirements.txt``
+	pip install -r requirements.txt
 	```
 
 5. To run the project, execute the `main.py` file::
